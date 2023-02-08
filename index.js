@@ -16,18 +16,17 @@
     const foodImg = new Image();
     let lastFoodLocation = [];
 
-window.addEventListener('keydown', (e)=>{
+window.addEventListener('keyup', (e)=>{
     let key = e.key;    
     if(key === "ArrowUp" && snakeHead.direction !== "down") {
         snakeHead.direction = "up";
-    } else if(key === "ArrowDown" && snakeHead.direction !== "up") {
+    }  if(key === "ArrowDown" && snakeHead.direction !== "up") {
         snakeHead.direction = "down";
-    } else if(key === "ArrowRight" && snakeHead.direction !== "left") {
+    }  if(key === "ArrowRight" && snakeHead.direction !== "left") {
         snakeHead.direction = "right";
-    } else if(key === "ArrowLeft" && snakeHead.direction !== "right") {
+    }  if(key === "ArrowLeft" && snakeHead.direction !== "right") {
          snakeHead.direction = "left";
     }
-    
 });
 
 const createScoreBoard = () => {
@@ -191,7 +190,6 @@ const animate = () => {
     setInterval(()=>{
         ctx.clearRect(0,0,canvas.width,canvas.height);
         drawGrid();
-        
         food.draw();
         snakeBody.forEach((piece)=>{
             piece.draw();
