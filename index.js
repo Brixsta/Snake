@@ -188,20 +188,20 @@ const food = new Food();
 
 const animate = () => {
     setInterval(()=>{
+        snakeHead.outOfBounds();
         ctx.clearRect(0,0,canvas.width,canvas.height);
         drawGrid();
         food.draw();
         snakeBody.forEach((piece)=>{
-            piece.draw();
             piece.outOfBounds();
+            piece.draw();
             piece.checkCollisions();
-        })
+        });
         snakeHead.draw();
         snakeHead.clearLastFoodLocation();
         followLeadPiece();
         snakeHead.move();
         snakeHead.eatFood();
-        snakeHead.outOfBounds();
     },100)
 }
 
