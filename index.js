@@ -4,9 +4,9 @@ const ctx = canvas.getContext('2d');
 const ROWS = 20;
 const COLS = 20;
 const CELL_SIZE = 25;
-
+let gameScore = 0;
 let snakeBody = [];
-let tail;
+let scoreBoardExists = false;
 const foodImg = new Image();
 let lastFoodLocation = [];
 
@@ -23,6 +23,17 @@ window.addEventListener('keydown', (e)=>{
     }
     
 });
+
+const createScoreBoard = () => {
+    if(scoreBoardExists === false) {
+        const wrapper = document.querySelector('.wrapper');
+        const score = document.createElement('span');
+        score.classList.add('score');
+        score.innerText = `Score:${gameScore}`;
+        wrapper.appendChild(score);
+        scoreBoardExists = true;
+    }
+}
 
 const drawGrid = () => {
     for(let i=0; i<COLS; i++) {
@@ -54,9 +65,15 @@ const randomFoodLocation = () => {
 }
 
 const randomFoodType = () => {
-    const images = ['./apple.png', './orange.png', './banana.png'];
+    const images = ['./images/apple.png', './images/orange.png','./images/banana.png'];
     const random = Math.floor(Math.random()*images.length);
     return images[random];
+}
+
+const incrementScore = () => {
+    const score = document.querySelector('.score');
+    gameScore++;
+    score.innerText = `Score:${gameScore}`;
 }
 
 class SnakeHead {
@@ -90,6 +107,7 @@ class SnakeHead {
             lastFoodLocation = [this.x,this.y];
             snakeBody.push(new SnakePiece(this.x,this.y))
             randomFoodLocation();
+            incrementScore();
         }
     }
 
@@ -106,11 +124,14 @@ class SnakeHead {
     }
 
     respawn () {
+        const score = document.querySelector('.score');
         this.x = CELL_SIZE * 3;
         this.y = CELL_SIZE * 3;
          snakeHead.direction = null;
         snakeBody = [];
         randomFoodLocation();
+        gameScore = 0;
+        score.innerText = `Score:${gameScore}`;
     }
 }
 
@@ -138,7 +159,6 @@ class SnakePiece {
         if(lastFoodLocation[0] !== this.x && lastFoodLocation !== this.y) {
             if(this.x === snakeHead.x && this.y === snakeHead.y) {
                 snakeHead.respawn();
-                
             }
         }
     }
@@ -158,7 +178,6 @@ class Food {
         ctx.drawImage(foodImg,this.x,this.y)
     }
 }
-
 const snakeHead = new SnakeHead();
 const food = new Food();
 
@@ -166,6 +185,7 @@ const animate = () => {
     setInterval(()=>{
         ctx.clearRect(0,0,canvas.width,canvas.height);
         drawGrid();
+        
         food.draw();
         snakeBody.forEach((piece)=>{
             piece.draw();
@@ -182,6 +202,7 @@ const animate = () => {
 }
 
 window.onload = () => {
+    createScoreBoard();
     animate();
     canvas.height = CELL_SIZE*ROWS;
     canvas.width = CELL_SIZE*COLS;
