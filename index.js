@@ -16,19 +16,13 @@
     let scoreBoardExists = false;
     const foodImg = new Image();
     let lastFoodLocation = [];
-    let onSquare = true;
-
+    
 window.addEventListener('keyup', (e)=>{
     let key = e.key;    
-    if(key === "ArrowUp" && snakeHead.direction !== "down") {
-        snakeHead.direction = "up";
-    }  if(key === "ArrowDown" && snakeHead.direction !== "up") {
-        snakeHead.direction = "down";
-    }  if(key === "ArrowRight" && snakeHead.direction !== "left") {
-        snakeHead.direction = "right";
-    }  if(key === "ArrowLeft" && snakeHead.direction !== "right") {
-         snakeHead.direction = "left";
-    }
+    if(key === "ArrowUp" && snakeHead.direction !== "down") snakeHead.direction = "up";
+    else if(key === "ArrowDown" && snakeHead.direction !== "up") snakeHead.direction = "down";
+    else if(key === "ArrowRight" && snakeHead.direction !== "left") snakeHead.direction = "right";
+    else if(key === "ArrowLeft" && snakeHead.direction !== "right") snakeHead.direction = "left";
 });
 
 const createScoreBoard = () => {
@@ -97,15 +91,10 @@ class SnakeHead {
     }
 
     move () {
-        if(this.direction === "up") {
-            this.y -= CELL_SIZE;
-        } else if(this.direction === "down") {
-            this.y += CELL_SIZE;
-        } else if (this.direction === "right") {
-            this.x += CELL_SIZE;
-        } else if(this.direction === "left") {
-            this.x -= CELL_SIZE;
-        }
+        if(this.direction === "up") this.y -= CELL_SIZE;
+        else if(this.direction === "down") this.y += CELL_SIZE;
+        else if (this.direction === "right") this.x += CELL_SIZE;
+        else if(this.direction === "left") this.x -= CELL_SIZE;
     }
 
     eatFood () {
@@ -120,12 +109,6 @@ class SnakeHead {
     clearLastFoodLocation () {
         if(this.x > lastFoodLocation[0] || this.x < lastFoodLocation[0] || this.y < lastFoodLocation[1] || this.y > lastFoodLocation[1]) {
             lastFoodLocation = [];
-        }
-    }
-
-    outOfBounds () {
-        if(this.x > canvas.width || this.x < 0 || this.y < 0 || this.y > canvas.height) {
-            this.respawn();
         }
     }
 
@@ -182,8 +165,8 @@ class Food {
 
 class GridSquare {
     constructor (x,y) {
-        this.x = x;
-        this.y = y;
+        this.x = x * CELL_SIZE;
+        this.y = y * CELL_SIZE;
         this.width = 25;
         this.height = 25;
         this.color = "white"
@@ -191,9 +174,26 @@ class GridSquare {
 
     draw () {
         ctx.fillStyle = this.color
-        ctx.fillRect(this.x*CELL_SIZE,this.y*CELL_SIZE,this.width,this.height)
+        ctx.fillRect(this.x,this.y,this.width,this.height)
         ctx.strokeStyle = "lightgray";
-        ctx.strokeRect(this.x*CELL_SIZE,this.y*CELL_SIZE,CELL_SIZE,CELL_SIZE);
+        ctx.strokeRect(this.x,this.y,this.width,this.height);
+    }
+}
+
+const snakeHeadOnSquare = () => {
+    let result = false;
+    for(let i=0; i<gridSquares.length; i++) {
+        if(gridSquares[i].x === snakeHead.x && gridSquares[i].y === snakeHead.y) {
+            result = true;
+        }
+    }
+    return result;
+}
+
+const snakeHeadLeavesBoard = () => {
+    const result = snakeHeadOnSquare();
+    if(result === false) {
+        snakeHead.respawn();
     }
 }
 
@@ -202,7 +202,6 @@ const food = new Food();
 
 const animate = () => {
     setInterval(()=>{
-        snakeHead.outOfBounds();
         ctx.clearRect(0,0,canvas.width,canvas.height);
         gridSquares.forEach((square)=>{
             square.draw();
@@ -217,6 +216,7 @@ const animate = () => {
         followLeadPiece();
         snakeHead.move();
         snakeHead.eatFood();
+        snakeHeadLeavesBoard();
     },100)
 }
 
