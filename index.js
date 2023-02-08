@@ -12,9 +12,11 @@
     const CELL_SIZE = 25;
     let gameScore = 0;
     let snakeBody = [];
+    let gridSquares = [];
     let scoreBoardExists = false;
     const foodImg = new Image();
     let lastFoodLocation = [];
+    let onSquare = true;
 
 window.addEventListener('keyup', (e)=>{
     let key = e.key;    
@@ -40,11 +42,10 @@ const createScoreBoard = () => {
     }
 }
 
-const drawGrid = () => {
+const createGrid = () => {
     for(let i=0; i<COLS; i++) {
         for(let j=0; j<ROWS; j++) {
-            ctx.strokeStyle = "lightgray";
-            ctx.strokeRect(i*CELL_SIZE,j*CELL_SIZE,CELL_SIZE,CELL_SIZE);
+            gridSquares.push(new GridSquare(i,j))
         }
     }
 }
@@ -154,13 +155,7 @@ class SnakePiece {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x,this.y,this.width,this.height);
     }
-    outOfBounds () {
-        if(this.x > canvas.width || this.x < 0 || this.y < 0 || this.y > canvas.height) {
-            this.respawn();
-        }
-    }
-
-    checkCollisions () {
+    snakeHeadCollision () {
         if(lastFoodLocation[0] !== this.x && lastFoodLocation !== this.y) {
             if(this.x === snakeHead.x && this.y === snakeHead.y) {
                 snakeHead.respawn();
@@ -183,6 +178,25 @@ class Food {
         ctx.drawImage(foodImg,this.x,this.y)
     }
 }
+
+
+class GridSquare {
+    constructor (x,y) {
+        this.x = x;
+        this.y = y;
+        this.width = 25;
+        this.height = 25;
+        this.color = "white"
+    }
+
+    draw () {
+        ctx.fillStyle = this.color
+        ctx.fillRect(this.x*CELL_SIZE,this.y*CELL_SIZE,this.width,this.height)
+        ctx.strokeStyle = "lightgray";
+        ctx.strokeRect(this.x*CELL_SIZE,this.y*CELL_SIZE,CELL_SIZE,CELL_SIZE);
+    }
+}
+
 const snakeHead = new SnakeHead();
 const food = new Food();
 
@@ -190,12 +204,13 @@ const animate = () => {
     setInterval(()=>{
         snakeHead.outOfBounds();
         ctx.clearRect(0,0,canvas.width,canvas.height);
-        drawGrid();
+        gridSquares.forEach((square)=>{
+            square.draw();
+        })
         food.draw();
         snakeBody.forEach((piece)=>{
-            piece.outOfBounds();
             piece.draw();
-            piece.checkCollisions();
+            piece.snakeHeadCollision();
         });
         snakeHead.draw();
         snakeHead.clearLastFoodLocation();
@@ -206,6 +221,7 @@ const animate = () => {
 }
 
 window.onload = () => {
+    createGrid();
     createScoreBoard();
     animate();
     canvas.height = CELL_SIZE*ROWS;
