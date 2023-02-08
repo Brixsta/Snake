@@ -1,14 +1,20 @@
-const canvas = document.querySelector('#game');
-const ctx = canvas.getContext('2d');
-
-const ROWS = 20;
-const COLS = 20;
-const CELL_SIZE = 25;
-let gameScore = 0;
-let snakeBody = [];
-let scoreBoardExists = false;
-const foodImg = new Image();
-let lastFoodLocation = [];
+(function(){
+    if(window.innerHeight < 550 || window.innerWidth < 500) {
+        alert('This game is only for devices with 550x550 resolution.');
+        const canvas = document.querySelector('#game');
+        canvas.remove();
+        return;
+    }
+    const canvas = document.querySelector('#game');
+    const ctx = canvas.getContext('2d');
+    const ROWS = 20;
+    const COLS = 20;
+    const CELL_SIZE = 25;
+    let gameScore = 0;
+    let snakeBody = [];
+    let scoreBoardExists = false;
+    const foodImg = new Image();
+    let lastFoodLocation = [];
 
 window.addEventListener('keydown', (e)=>{
     let key = e.key;    
@@ -207,3 +213,5 @@ window.onload = () => {
     canvas.height = CELL_SIZE*ROWS;
     canvas.width = CELL_SIZE*COLS;
 }
+})()
+
